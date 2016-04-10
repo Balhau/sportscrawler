@@ -29,6 +29,8 @@ setup(
 	packages=packages,
     test_suite="tests",
     install_requires=[
+		'beautifulsoup4',
+		'requests'
 	  	   #'lxml',
 		   #'sqlalchemy'
       ]
