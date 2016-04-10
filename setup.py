@@ -4,7 +4,7 @@ import codecs
 from setuptools import setup, find_packages
 
 
-pname="omxclient"
+pname="sportscrawler"
 
 packages=[pname]+[pname+ "." + name
 	for name in os.listdir(os.path.join(pname)) if os.path.isdir(os.path.join(pname, name))]
