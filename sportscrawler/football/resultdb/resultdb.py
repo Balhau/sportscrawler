@@ -2,9 +2,12 @@
 # coding=utf-8
 from bs4 import BeautifulSoup
 import requests
+from datetime import datetime
+import time
 
 class Result:
-    def __init__(self,teamHome,pointHome,teamAway,pointAway):
+    def __init__(self,date,teamHome,pointHome,teamAway,pointAway):
+        self.date=date
         self.teamAway=teamAway
         self.teamHome=teamHome
         self.pointHome=pointHome
@@ -15,9 +18,6 @@ class Season:
         self.year=year
         self.teams=teams
         self.results=results
-
-    def __repr__(self):
-        return "<% year={0}%>".format(self.year)
 
 class League:
     def __init__(self,name,url,season=None):
@@ -74,5 +74,19 @@ class ResultDB:
     This will get a season for a specific league
     '''
     def getLeagueSeason(self,league,year,gamelimit=380):
-        s=soup(post(self.hostname+league.url+year,{'gamelimit':gamelimit}).text)
-        return s
+        s=soup(post(self.hostname+league.url+year+"/",{'gamelimit':gamelimit}).text)
+        t=s.find_all('table',{ "class" : "results" })[0]
+        tr=t.find_all('tr',{ "class" : "odd" })[1:]
+        teams=[]
+        results=[]
+        for r in tr:
+            td=r.find_all('td')
+            date=td[0].text.replace("th","").replace("st","").replace("rd","").replace("nd","").replace("Augu","August")
+            team=td[1].text.split('-')
+            result=td[2].text.split('-')
+            results.append(Result(date,team[0],result[0],team[1],result[1]))
+            if team[0] not in teams:
+                teams.append(team[0])
+            if team[1] not in teams:
+                teams.append(team[1])
+        return Season(year,teams,results)
